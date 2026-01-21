@@ -37,11 +37,10 @@ async def analyze_diet(
     except Exception as e:
         return {
             "image_path": file_path,
-            "analysis": {
-                "items": [],
-                "total_kcal": 0,
-                "advice": f"AI Analysis failed. {str(e)}"
-            }
+            "items": [],
+            "total_kcal": 0,
+            "advice": "AI Analysis failed.",
+            "error": str(e)
         }
 
     return {
@@ -68,8 +67,3 @@ async def confirm_diet_log(log_data: dict, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_log)
     return new_log
-@router.get("/history")
-async def get_diet_history(user_id: int = 1, db: Session = Depends(get_db)):
-    logs = db.query(DietLog).filter(DietLog.user_id == user_id)\
-        .order_by(DietLog.timestamp.desc()).all()
-    return logs

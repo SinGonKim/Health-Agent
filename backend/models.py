@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text, 
 from sqlalchemy.orm import relationship
 try:
     # Run from repo root: uvicorn backend.main:app
-    from backend.core.database import Base
+from backend.core.database import Base
 except ModuleNotFoundError:
     # Run from backend/ directory: uvicorn main:app
     from core.database import Base
@@ -21,7 +21,6 @@ class User(Base):
     exercise_logs = relationship("ExerciseLog", back_populates="user")
     health_metrics = relationship("HealthMetric", back_populates="user")
     daily_reports = relationship("DailyReport", back_populates="user")
-    recommendation_cache = relationship("RecommendationCache", back_populates="user", uselist=False)
 
 class DietLog(Base):
     __tablename__ = "diet_logs"
@@ -71,14 +70,3 @@ class DailyReport(Base):
     kakao_sent = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="daily_reports")
-
-class RecommendationCache(Base):
-    __tablename__ = "recommendation_cache"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    meal_recommendation = Column(String, nullable=True)
-    workout_recommendation = Column(String, nullable=True)
-    generated_at = Column(DateTime, default=datetime.utcnow)
-
-    user = relationship("User", back_populates="recommendation_cache")
